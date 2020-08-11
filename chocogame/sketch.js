@@ -18,8 +18,6 @@ const piecesPositions = [
 let board;
 let pieces = [];
 let nextPosition;
-let resolutions = [];
-let resolutionsCount = 0;
 
 function setup() {
   piecesColors = [
@@ -29,14 +27,14 @@ function setup() {
     color('red'),
     color('purple'),
     color('black'),
-    color('white'),
+    color('red'),
     color('green'),
     color('cyan'),
     color('gray'),
     color('pink'),
     color('brown')
   ]
-  createCanvas(1400, 1400);
+  createCanvas(500, 500);
   frameRate(1);
 
   tiles = [];
@@ -50,25 +48,14 @@ function setup() {
   for (let i = 0 ; i < piecesPositions.length; ++i) {
     pieces.push(new Piece(i + 1, piecesPositions[i], piecesColors[i]));
   }
-  for (let i = 0 ; i < piecesPositions.length; ++i) {
-    for (let j = 0 ; j < pieces[i].possiblePositions.length; ++j) {
-      board.solve(0, 0, i, j);
-    }
-  }
-  console.log(resolutionsCount);
 }
 
 function draw() {
   background(110);
-  // for (let i = 0 ; i < piecesPositions.length; ++i) {
-  //   for (let j = 0; j < pieces[i].possiblePositions.length; ++j) {
-  //     pieces[i].draw(j * 6 + 11, 2 + 5 * i, j);
-  //   }
-  // }
-  // for (let i = 0; i < resolutions.length; ++i) {
-  //   board.draw(0, i * 4, resolutions[i]);
-  // }
-  board.draw(0, 0, resolutions[0]);
+  for (let i = 0 ; i < piecesPositions.length; ++i) {
+    pieces[i].draw(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 1, 0);
+  }
+  board.draw();
 }
 
 function Board(tiles = [], rows = 0, columns = 0){
@@ -116,47 +103,15 @@ function Board(tiles = [], rows = 0, columns = 0){
     return undefined;
   }
   
-  this.found = false;
-  this.solve = (x, y, pieceIndex, positionIndex) => {
-    let currTiles = pieces[pieceIndex].possiblePositions[positionIndex];
-    
-    if (!this.canInsert(x, y, currTiles)) {
-      return;
-    } else {
-      this.insert(x, y, currTiles, pieceIndex + 1);
-      this.usedPieces[pieceIndex] = true;
-      this.usedPiecesCount++;
-      
-      if (this.usedPiecesCount === 12){
-        // resolutions.push(JSON.parse(JSON.stringify(this.painted)));
-        resolutionsCount++;
-      } else {
-        let nextPos = this.nextUnused();
-        for (let i = 0; i < pieces.length; ++i) {
-          if (!this.usedPieces[i]) {
-            for (let j = 0; j < pieces[i].possiblePositions.length; ++j) {
-              this.solve(nextPos.x, nextPos.y, i, j);
-            }
-          }
-        }
-      }
-
-      this.remove(x, y, currTiles);
-      this.usedPieces[pieceIndex] = false;
-      this.usedPiecesCount--;
-    }
-  }
   
   this.draw = (x = 0, y = 0, painted = this.painted) => {
     this.tiles.forEach(tile => {
-      let color = painted[tile.x][tile.y];
-      if (nextPosition != undefined && tile.x === nextPosition.x && tile.y === nextPosition.y) {
-        fill(0,255,0);
-      } else if (color === 0) {
-        fill(255,0,0);
-      }else{
-        fill(piecesColors[color-1]);
-      }
+      let cc = painted[tile.x][tile.y];
+      if (cc == 0){
+        fill(color("white"));
+      }else
+        fill(piecesColors[cc-1]);
+
       rect((x + tile.x)*TILE_WIDTH, (y + tile.y)*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
     })
   }
