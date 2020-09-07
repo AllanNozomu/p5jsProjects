@@ -53,9 +53,9 @@ function setup() {
 function draw() {
   background(110);
   for (let i = 0 ; i < piecesPositions.length; ++i) {
-    pieces[i].draw(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 1, 0);
+    pieces[i].draw(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2, 0);
   }
-  board.draw();
+  board.draw(7, 1);
 }
 
 function Board(tiles = [], rows = 0, columns = 0){
