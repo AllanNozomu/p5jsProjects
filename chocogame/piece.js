@@ -47,7 +47,7 @@ function Piece(id=0, tiles = [], c = color("white")){
     });
   }
   
-  this.draw = (x = 0, y = 0, index = 0) => {
+  this.draw = (x, y, index) => {
     this.possiblePositions[index].forEach((position) => {
       fill(this.color);
       rect((position.x + x)*TILE_WIDTH, (position.y + y)*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
