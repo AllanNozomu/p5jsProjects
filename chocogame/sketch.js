@@ -53,7 +53,17 @@ function setup() {
 function draw() {
   background(110);
   for (let i = 0 ; i < piecesPositions.length; ++i) {
-    pieces[i].draw(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2, 0);
+    fill(55);
+    let pos = new Position(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2);
+    rect(pos.x * TILE_WIDTH, pos.y * TILE_WIDTH, 100, 80);
+    if (i == 0)
+      pieces[i].draw(pos.x, pos.y + 1, 0)
+    else if (i == 1) 
+      pieces[i].draw(pos.x, pos.y, 3)
+    else if (i == 9)
+      pieces[i].draw(pos.x, pos.y, 1);
+    else 
+      pieces[i].draw(pos.x, pos.y, 0);
   }
   board.draw(7, 1);
 }
