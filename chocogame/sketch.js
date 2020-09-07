@@ -55,6 +55,7 @@ function setup() {
     pieces.push(new Piece(i + 1, PIECES_MAP[i], piecesColors[i]));
     let pos = new Position(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2);
     buttonsPos.push(pos);
+    piecesRotations[i] = 0;
   }
 }
 
@@ -74,7 +75,7 @@ function draw() {
     if (pressedPiece != null && i === pressedPiece) {
       console.log(pressedPiece);
       let dragPos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
-      pieces[i].draw(dragPos.x, dragPos.y, 0);
+      pieces[i].draw(dragPos.x, dragPos.y, piecesRotations[i]);
       continue;
     }
 
@@ -161,8 +162,9 @@ function mousePressed(){
       pressedPiece = null;
       return;
     }
-    if (board.canInsert(fixPos.x, fixPos.y, piece.possiblePositions[0])) {
-      board.insert(fixPos.x, fixPos.y, piece.possiblePositions[0], piece.id);
+    let pieceRotation = piecesRotations[pressedPiece];
+    if (board.canInsert(fixPos.x, fixPos.y, piece.possiblePositions[pieceRotation])) {
+      board.insert(fixPos.x, fixPos.y, piece.possiblePositions[pieceRotation], piece.id);
       usedPieces[pressedPiece] = 1;
       pressedPiece = null;
     }
@@ -175,6 +177,17 @@ function mousePressed(){
           break;
         }
       }
+    }
+  }
+}
+
+function keyPressed(){
+  if (pressedPiece != null) {
+    if (key === 'R' || key === 'r') {
+      let piece = pieces[pressedPiece];
+      piecesRotations[pressedPiece]++;
+      if (piecesRotations[pressedPiece] >= piece.possiblePositions.length)
+        piecesRotations[pressedPiece] = 0;
     }
   }
 }
