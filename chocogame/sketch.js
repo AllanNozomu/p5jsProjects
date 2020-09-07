@@ -1,23 +1,26 @@
 let piecesColors;
 
 const TILE_WIDTH = 20;
-const piecesPositions = [
+const PIECES_MAP = [
   [new Position(0,0),new Position(1,0),new Position(2,0),new Position(1,-1),new Position(1,1)],
-  [new Position(0,0),new Position(0,1),new Position(1,1),new Position(1,2),new Position(2,2)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(0,3),new Position(0,4)],
+  [new Position(0,0),new Position(1,0),new Position(1,1),new Position(2,1),new Position(2,2)],
+  [new Position(0,0),new Position(1,0),new Position(2,0),new Position(3,0),new Position(4,0)],
   [new Position(0,0),new Position(0,1),new Position(0,2),new Position(0,3),new Position(1,3)],
+  
   [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,2),new Position(2,2)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(2,0)],
+  [new Position(0,0),new Position(0,1),new Position(1,1),new Position(2,1),new Position(2,2)],
   [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(0,0)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(2,1)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(2,2)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(1,3)],
+  [new Position(0,0),new Position(0,1),new Position(1,1),new Position(1,2),new Position(2,1)],
+  
+  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,1),new Position(2,1)],
+  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(0,3),new Position(1,1)],
   [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,0),new Position(1,1)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(0,3)]
+  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,2),new Position(1,3)]
 ];
 let board;
 let pieces = [];
 let buttonsPos = [];
+// let piecesPositions = [];
 let nextPosition;
 let pressedPiece;
 
@@ -47,8 +50,8 @@ function setup() {
   }
   board = new Board(tiles);
   
-  for (let i = 0 ; i < piecesPositions.length; ++i) {
-    pieces.push(new Piece(i + 1, piecesPositions[i], piecesColors[i]));
+  for (let i = 0 ; i < PIECES_MAP.length; ++i) {
+    pieces.push(new Piece(i + 1, PIECES_MAP[i], piecesColors[i]));
     let pos = new Position(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2);
     buttonsPos.push(pos);
   }
@@ -58,7 +61,7 @@ function draw() {
   background(220);
   
   board.draw(7, 1);
-  for (let i = 0 ; i < piecesPositions.length; ++i) {
+  for (let i = 0 ; i < PIECES_MAP.length; ++i) {
     
     let pos = buttonsPos[i];
 
@@ -74,10 +77,6 @@ function draw() {
 
     if (i == 0)
       pieces[i].draw(pos.x, pos.y + 1, 0)
-    else if (i == 1) 
-      pieces[i].draw(pos.x, pos.y, 3)
-    else if (i == 9)
-      pieces[i].draw(pos.x, pos.y, 1);
     else 
       pieces[i].draw(pos.x, pos.y, 0);
   }

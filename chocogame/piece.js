@@ -55,7 +55,7 @@ function Piece(id=0, tiles = [], c = color("white")){
   }
   
   for (let i = 0 ; i < 4; ++i) {
-    this.rotate();
+    
     this.moveTo00();
     let possiblePosition = this.tiles.map(pos => new Position(pos.x, pos.y));
     if (this.possiblePositions.filter(pp => {
@@ -65,6 +65,7 @@ function Piece(id=0, tiles = [], c = color("white")){
       return true;
     }).length == 0)
       this.possiblePositions.push(possiblePosition);
+    this.rotate();
   }
   this.horizontalReverse();
   for (let i = 0 ; i < 4; ++i) {
