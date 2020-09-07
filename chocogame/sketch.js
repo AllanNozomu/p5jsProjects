@@ -211,13 +211,16 @@ function keyPressed(){
   }
 
   if (pressedPiece != null) {
-    if (key === 'R' || key === 'r') {
+    if (key === 'q' || key === 'Q') {
       let piece = pieces[pressedPiece];
       piecesRotations[pressedPiece]++;
       if (piecesRotations[pressedPiece] >= piece.possiblePositions.length)
         piecesRotations[pressedPiece] = 0;
+    } else if (key === 'e' || key === 'E') {
+      let piece = pieces[pressedPiece];
+      piecesRotations[pressedPiece]--;
+      if (piecesRotations[pressedPiece] < 0)
+        piecesRotations[pressedPiece] = piece.possiblePositions.length - 1;
     }
   }
-
-  
 }
