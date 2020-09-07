@@ -121,6 +121,13 @@ function Board(tiles = [], rows = 0, columns = 0){
       this.painted[position.x + x][position.y + y] = 0;
     });
   }
+
+  this.removeColor = color => {
+    this.tiles.forEach(position => {
+      if (this.painted[position.x][position.y] === color)
+        this.painted[position.x][position.y] = 0;
+    });
+  };
   
   this.nextUnused = () => {
     for (let i = 0; i < tiles.length; ++i) {
@@ -152,21 +159,30 @@ function Position(x = 0, y = 0){
 }
 
 function mousePressed(){
+  if (mouseButton !== LEFT) return;
+  
   let pos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
+  let fixPos = new Position(pos.x - 7, pos.y - 1);
 
   if (pressedPiece != null) {
     let piece = pieces[pressedPiece];
-    let fixPos = new Position(pos.x - 7, pos.y - 1);
 
-    if (fixPos.x < 0 || fixPos. x > 10 || fixPos.y < 0 || fixPos > 6) {
+    if (fixPos.x < 0 || fixPos. x >= 10 || fixPos.y < 0 || fixPos.y >= 6) {
       pressedPiece = null;
       return;
     }
+
     let pieceRotation = piecesRotations[pressedPiece];
     if (board.canInsert(fixPos.x, fixPos.y, piece.possiblePositions[pieceRotation])) {
       board.insert(fixPos.x, fixPos.y, piece.possiblePositions[pieceRotation], piece.id);
-      usedPieces[pressedPiece] = 1;
+      usedPieces[pressedPiece] = true;
       pressedPiece = null;
+    }
+  } else if (fixPos.x >= 0 && fixPos. x < 10 && fixPos.y >= 0 && fixPos.y < 6) {
+    if (board.painted[fixPos.x][fixPos.y] > 0) {
+      pressedPiece = board.painted[fixPos.x][fixPos.y] - 1;
+      board.removeColor(pressedPiece + 1);
+      usedPieces[pressedPiece] = false;
     }
   } else {
     for (let i = 0; i < buttonsPos.length; ++i) {
