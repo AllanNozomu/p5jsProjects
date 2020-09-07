@@ -20,7 +20,8 @@ const PIECES_MAP = [
 let board;
 let pieces = [];
 let buttonsPos = [];
-// let piecesPositions = [];
+let piecesRotations = {};
+let usedPieces = {};
 let nextPosition;
 let pressedPiece;
 
@@ -67,6 +68,8 @@ function draw() {
 
     fill(110);
     rect(pos.x * TILE_WIDTH, pos.y * TILE_WIDTH, 100, 80);
+
+    if (usedPieces[i]) continue;
 
     if (pressedPiece != null && i === pressedPiece) {
       console.log(pressedPiece);
@@ -160,6 +163,7 @@ function mousePressed(){
     }
     if (board.canInsert(fixPos.x, fixPos.y, piece.possiblePositions[0])) {
       board.insert(fixPos.x, fixPos.y, piece.possiblePositions[0], piece.id);
+      usedPieces[pressedPiece] = 1;
       pressedPiece = null;
     }
   } else {
