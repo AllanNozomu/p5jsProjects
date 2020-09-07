@@ -29,7 +29,7 @@ function setup() {
   piecesColors = [
     color('magenta'),
     color('blue'),
-    color('yellow'),
+    color('gold'),
     color('red'),
     color('purple'),
     color('black'),
@@ -60,6 +60,9 @@ function setup() {
 }
 
 function draw() {
+  if (pressedPiece == null) cursor();
+  else noCursor();
+
   background(220);
   
   board.draw(7, 1);
@@ -73,7 +76,6 @@ function draw() {
     if (usedPieces[i]) continue;
 
     if (pressedPiece != null && i === pressedPiece) {
-      console.log(pressedPiece);
       let dragPos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
       pieces[i].draw(dragPos.x, dragPos.y, piecesRotations[i]);
       continue;
@@ -144,7 +146,7 @@ function Board(tiles = [], rows = 0, columns = 0){
     this.tiles.forEach(tile => {
       let cc = painted[tile.x][tile.y];
       if (cc == 0){
-        fill(color(220));
+        fill(color("white"));
       }else
         fill(piecesColors[cc-1]);
 
@@ -160,7 +162,7 @@ function Position(x = 0, y = 0){
 
 function mousePressed(){
   if (mouseButton !== LEFT) return;
-  
+
   let pos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
   let fixPos = new Position(pos.x - 7, pos.y - 1);
 
@@ -190,6 +192,7 @@ function mousePressed(){
       if (currButton.x <= pos.x && pos.x <= currButton.x + 5) {
         if (currButton.y <= pos.y && pos.y <= currButton.y + 4){
           pressedPiece = i;
+          piecesRotations[pressedPiece] = 0;
           break;
         }
       }
@@ -198,6 +201,15 @@ function mousePressed(){
 }
 
 function keyPressed(){
+  if (key == "Escape") {
+    pressedPiece = null;
+    usedPieces = {};
+    for (let i = 0 ; i < PIECES_MAP.length; ++i) {
+      board.removeColor(i + 1);
+    }
+    return;
+  }
+
   if (pressedPiece != null) {
     if (key === 'R' || key === 'r') {
       let piece = pieces[pressedPiece];
@@ -206,4 +218,6 @@ function keyPressed(){
         piecesRotations[pressedPiece] = 0;
     }
   }
+
+  
 }
