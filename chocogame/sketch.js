@@ -1,5 +1,7 @@
 let piecesColors;
 
+const WIDTH = 500;
+const HEIGHT = 500;
 const TILE_WIDTH = 20;
 const PIECES_MAP = [
   [new Position(0,0),new Position(1,0),new Position(2,0),new Position(1,-1),new Position(1,1)],
@@ -66,14 +68,17 @@ function draw() {
   background(220);
   
   board.draw(7, 1);
+  let placed = 0;
   for (let i = 0 ; i < PIECES_MAP.length; ++i) {
-    
     let pos = buttonsPos[i];
 
     fill(110);
     rect(pos.x * TILE_WIDTH, pos.y * TILE_WIDTH, 100, 80);
 
-    if (usedPieces[i]) continue;
+    if (usedPieces[i]) {
+      placed++;
+      continue;
+    }
 
     if (pressedPiece != null && i === pressedPiece) {
       let dragPos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
@@ -86,7 +91,12 @@ function draw() {
     else 
       pieces[i].draw(pos.x, pos.y, 0);
   }
-  
+
+  if (placed === PIECES_MAP.length) {
+    textSize(32);
+    fill(0);
+    text('You did it', WIDTH / 2 - textWidth('You dit it') / 2, HEIGHT - 8);
+  }
 }
 
 function Board(tiles = [], rows = 0, columns = 0){
@@ -94,7 +104,6 @@ function Board(tiles = [], rows = 0, columns = 0){
   this.painted = {};
   this.usedPieces = tiles.map(() => false);
   this.usedPiecesCount = 0;
-  this.done = false;
 
   tiles.forEach(tile => {
     if (!this.painted[tile.x]){
