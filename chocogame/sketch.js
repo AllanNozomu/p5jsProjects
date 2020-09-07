@@ -17,7 +17,9 @@ const piecesPositions = [
 ];
 let board;
 let pieces = [];
+let buttonsPos = [];
 let nextPosition;
+let pressedPiece;
 
 function setup() {
   piecesColors = [
@@ -27,7 +29,7 @@ function setup() {
     color('red'),
     color('purple'),
     color('black'),
-    color('red'),
+    color('darkblue'),
     color('green'),
     color('cyan'),
     color('gray'),
@@ -35,7 +37,7 @@ function setup() {
     color('brown')
   ]
   createCanvas(500, 500);
-  frameRate(1);
+  frameRate(30);
 
   tiles = [];
   for (let i = 0 ; i < 10; ++i){
@@ -47,15 +49,29 @@ function setup() {
   
   for (let i = 0 ; i < piecesPositions.length; ++i) {
     pieces.push(new Piece(i + 1, piecesPositions[i], piecesColors[i]));
+    let pos = new Position(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2);
+    buttonsPos.push(pos);
   }
 }
 
 function draw() {
-  background(110);
+  background(220);
+  
+  board.draw(7, 1);
   for (let i = 0 ; i < piecesPositions.length; ++i) {
-    fill(55);
-    let pos = new Position(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2);
+    
+    let pos = buttonsPos[i];
+
+    fill(110);
     rect(pos.x * TILE_WIDTH, pos.y * TILE_WIDTH, 100, 80);
+
+    if (pressedPiece != null && i === pressedPiece) {
+      console.log(pressedPiece);
+      let dragPos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
+      pieces[i].draw(dragPos.x, dragPos.y, 0);
+      continue;
+    }
+
     if (i == 0)
       pieces[i].draw(pos.x, pos.y + 1, 0)
     else if (i == 1) 
@@ -65,7 +81,7 @@ function draw() {
     else 
       pieces[i].draw(pos.x, pos.y, 0);
   }
-  board.draw(7, 1);
+  
 }
 
 function Board(tiles = [], rows = 0, columns = 0){
@@ -83,7 +99,7 @@ function Board(tiles = [], rows = 0, columns = 0){
   });
   
   this.canInsert = (x, y, tiles) => {
-    for (let i = 0;  i < tiles.length; ++i){
+    for (let i = 0;  i < tiles.length; ++i) {
         if (this.painted[tiles[i].x + x] === undefined ||  this.painted[tiles[i].x + x][tiles[i].y + y]  === undefined || this.painted[tiles[i].x + x][tiles[i].y + y] !== 0) {
           return false;
         }
@@ -118,7 +134,7 @@ function Board(tiles = [], rows = 0, columns = 0){
     this.tiles.forEach(tile => {
       let cc = painted[tile.x][tile.y];
       if (cc == 0){
-        fill(color("white"));
+        fill(color(220));
       }else
         fill(piecesColors[cc-1]);
 
@@ -130,4 +146,32 @@ function Board(tiles = [], rows = 0, columns = 0){
 function Position(x = 0, y = 0){
   this.x = x;
   this.y = y;
+}
+
+function mousePressed(){
+  let pos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
+
+  if (pressedPiece != null) {
+    let piece = pieces[pressedPiece];
+    let fixPos = new Position(pos.x - 7, pos.y - 1);
+
+    if (fixPos.x < 0 || fixPos. x > 10 || fixPos.y < 0 || fixPos > 6) {
+      pressedPiece = null;
+      return;
+    }
+    if (board.canInsert(fixPos.x, fixPos.y, piece.possiblePositions[0])) {
+      board.insert(fixPos.x, fixPos.y, piece.possiblePositions[0], piece.id);
+      pressedPiece = null;
+    }
+  } else {
+    for (let i = 0; i < buttonsPos.length; ++i) {
+      let currButton = buttonsPos[i];
+      if (currButton.x <= pos.x && pos.x <= currButton.x + 5) {
+        if (currButton.y <= pos.y && pos.y <= currButton.y + 4){
+          pressedPiece = i;
+          break;
+        }
+      }
+    }
+  }
 }
