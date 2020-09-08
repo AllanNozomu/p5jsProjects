@@ -25,7 +25,7 @@ let buttonsPos = [];
 let piecesRotations = {};
 let usedPieces = {};
 let nextPosition;
-let pressedPiece;
+let pressedPiece = null;
 
 function setup() {
   piecesColors = [
@@ -74,6 +74,10 @@ function draw() {
 
     fill(110);
     rect(pos.x * TILE_WIDTH, pos.y * TILE_WIDTH, 100, 80);
+  }
+
+  for (let i = 0 ; i < PIECES_MAP.length; ++i) {
+    let pos = buttonsPos[i];
 
     if (usedPieces[i]) {
       placed++;
@@ -81,8 +85,6 @@ function draw() {
     }
 
     if (pressedPiece != null && i === pressedPiece) {
-      let dragPos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
-      pieces[i].draw(dragPos.x, dragPos.y, piecesRotations[i]);
       continue;
     }
 
@@ -90,6 +92,11 @@ function draw() {
       pieces[i].draw(pos.x, pos.y + 1, 0)
     else 
       pieces[i].draw(pos.x, pos.y, 0);
+  }
+
+  if (pressedPiece !== null) {
+    let dragPos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
+    pieces[pressedPiece].draw(dragPos.x, dragPos.y, piecesRotations[pressedPiece]);
   }
 
   if (placed === PIECES_MAP.length) {
