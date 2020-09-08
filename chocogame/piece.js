@@ -6,7 +6,6 @@ function Piece(id=0, tiles = [], c = color("white")){
   
   this.horizontalReverse = () => {
     if (id === 1) return;
-    let newTiles = [];
     let maxValue = 0;
     
     this.tiles.map((position) => {
@@ -27,6 +26,7 @@ function Piece(id=0, tiles = [], c = color("white")){
       position.x = aux;
     });
     this.horizontalReverse();
+    this.moveTo00
   }
   
   this.moveTo00 = () => {
@@ -40,6 +40,7 @@ function Piece(id=0, tiles = [], c = color("white")){
     });
   }
   
+  
   this.draw = (x = 0, y = 0) => {
     this.tiles.forEach((position) => {
       fill(this.color);
@@ -47,6 +48,7 @@ function Piece(id=0, tiles = [], c = color("white")){
     });
   }
   
+  // Draw based on the possible position index
   this.draw = (x, y, index) => {
     this.possiblePositions[index].forEach((position) => {
       fill(this.color);
@@ -54,11 +56,13 @@ function Piece(id=0, tiles = [], c = color("white")){
     });
   }
   
+
+  // Make all the possibilities of the piece, based on rotation
   for (let i = 0 ; i < 4; ++i) {
-    
-    this.moveTo00();
+    // Check for repeated positions
     let possiblePosition = this.tiles.map(pos => new Position(pos.x, pos.y));
     if (this.possiblePositions.filter(pp => {
+      // Filter if the current tiles match any of the possiblePositions saved ones
       for (let j = 0; j < pp.length; ++j) {
         if (pp[j].x != possiblePosition[j].x || pp[j].y != possiblePosition[j].y) return false;
       }
@@ -67,10 +71,10 @@ function Piece(id=0, tiles = [], c = color("white")){
       this.possiblePositions.push(possiblePosition);
     this.rotate();
   }
+  // Make all the possibilities, but now reversed
   this.horizontalReverse();
   for (let i = 0 ; i < 4; ++i) {
     this.rotate();
-    this.moveTo00();
     let possiblePosition = this.tiles.map(pos => new Position(pos.x, pos.y));
     if (this.possiblePositions.filter(pp => {
       for (let j = 0; j < pp.length; ++j) {

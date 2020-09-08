@@ -1,4 +1,7 @@
-let piecesColors;
+function Position(x = 0, y = 0){
+  this.x = x;
+  this.y = y;
+}
 
 const WIDTH = 500;
 const HEIGHT = 500;
@@ -19,15 +22,21 @@ const PIECES_MAP = [
   [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,0),new Position(1,1)],
   [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,2),new Position(1,3)]
 ];
+
 let board;
+let piecesColors;
 let pieces = [];
 let buttonsPos = [];
 let piecesRotations = {};
 let usedPieces = {};
-let nextPosition;
 let pressedPiece = null;
 
+
 function setup() {
+  createCanvas(500, 500);
+  frameRate(30);
+
+  // Need to put here to make color work
   piecesColors = [
     color('magenta'),
     color('blue'),
@@ -42,8 +51,7 @@ function setup() {
     color('pink'),
     color('brown')
   ]
-  createCanvas(500, 500);
-  frameRate(30);
+  
 
   tiles = [];
   for (let i = 0 ; i < 10; ++i){
@@ -53,6 +61,7 @@ function setup() {
   }
   board = new Board(tiles);
   
+  // Create each piece and set its position on the game
   for (let i = 0 ; i < PIECES_MAP.length; ++i) {
     pieces.push(new Piece(i + 1, PIECES_MAP[i], piecesColors[i]));
     let pos = new Position(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2);
@@ -62,13 +71,14 @@ function setup() {
 }
 
 function draw() {
+  // Hide cursor when holding a piece
   if (pressedPiece == null) cursor();
   else noCursor();
 
   background(220);
-  
   board.draw(7, 1);
-  let placed = 0;
+  
+  // Draw each piece square
   for (let i = 0 ; i < PIECES_MAP.length; ++i) {
     let pos = buttonsPos[i];
 
@@ -76,29 +86,32 @@ function draw() {
     rect(pos.x * TILE_WIDTH, pos.y * TILE_WIDTH, 100, 80);
   }
 
+  let placed = 0;
   for (let i = 0 ; i < PIECES_MAP.length; ++i) {
-    let pos = buttonsPos[i];
-
     if (usedPieces[i]) {
       placed++;
       continue;
     }
-
+    
     if (pressedPiece != null && i === pressedPiece) {
       continue;
     }
-
+    
+    // Draw each piece (the first piece is an exception)
+    let pos = buttonsPos[i];
     if (i == 0)
       pieces[i].draw(pos.x, pos.y + 1, 0)
     else 
       pieces[i].draw(pos.x, pos.y, 0);
   }
 
+  // Make the selected piece float
   if (pressedPiece !== null) {
     let dragPos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
     pieces[pressedPiece].draw(dragPos.x, dragPos.y, piecesRotations[pressedPiece]);
   }
 
+  // Verify if all the pieces was put
   if (placed === PIECES_MAP.length) {
     textSize(32);
     fill(0);
@@ -106,102 +119,38 @@ function draw() {
   }
 }
 
-function Board(tiles = [], rows = 0, columns = 0){
-  this.tiles = tiles.sort();
-  this.painted = {};
-  this.usedPieces = tiles.map(() => false);
-  this.usedPiecesCount = 0;
-
-  tiles.forEach(tile => {
-    if (!this.painted[tile.x]){
-      this.painted[tile.x] = {};
-    }
-    this.painted[tile.x][tile.y] = 0;
-  });
-  
-  this.canInsert = (x, y, tiles) => {
-    for (let i = 0;  i < tiles.length; ++i) {
-        if (this.painted[tiles[i].x + x] === undefined ||  this.painted[tiles[i].x + x][tiles[i].y + y]  === undefined || this.painted[tiles[i].x + x][tiles[i].y + y] !== 0) {
-          return false;
-        }
-      }
-    return true;
-  }
-  
-  this.insert = (x, y, tiles, id) => {
-    tiles.forEach(position => {
-      this.painted[position.x + x][position.y + y] = id;
-    });
-  }
-  
-  this.remove = (x, y, tiles) => {
-    tiles.forEach(position => {
-      this.painted[position.x + x][position.y + y] = 0;
-    });
-  }
-
-  this.removeColor = color => {
-    this.tiles.forEach(position => {
-      if (this.painted[position.x][position.y] === color)
-        this.painted[position.x][position.y] = 0;
-    });
-  };
-  
-  this.nextUnused = () => {
-    for (let i = 0; i < tiles.length; ++i) {
-      let pos = tiles[i];
-      if (this.painted[pos.x][pos.y] === 0) {
-        return pos;
-      }
-    }
-    return undefined;
-  }
-  
-  
-  this.draw = (x = 0, y = 0, painted = this.painted) => {
-    this.tiles.forEach(tile => {
-      let cc = painted[tile.x][tile.y];
-      if (cc == 0){
-        fill(color("white"));
-      }else
-        fill(piecesColors[cc-1]);
-
-      rect((x + tile.x)*TILE_WIDTH, (y + tile.y)*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-    })
-  }
-}
-
-function Position(x = 0, y = 0){
-  this.x = x;
-  this.y = y;
-}
-
 function mousePressed(){
   if (mouseButton !== LEFT) return;
-
+  // Real position (based on Tile_WIDTH)
   let pos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
+  // board fixed position
   let fixPos = new Position(pos.x - 7, pos.y - 1);
 
+  // Current holding a piece
   if (pressedPiece != null) {
-    let piece = pieces[pressedPiece];
-
+    // Check click inside board
     if (fixPos.x < 0 || fixPos. x >= 10 || fixPos.y < 0 || fixPos.y >= 6) {
       pressedPiece = null;
       return;
     }
 
+    let piece = pieces[pressedPiece];
     let pieceRotation = piecesRotations[pressedPiece];
+
     if (board.canInsert(fixPos.x, fixPos.y, piece.possiblePositions[pieceRotation])) {
       board.insert(fixPos.x, fixPos.y, piece.possiblePositions[pieceRotation], piece.id);
       usedPieces[pressedPiece] = true;
       pressedPiece = null;
     }
+  // Clicked on board
   } else if (fixPos.x >= 0 && fixPos. x < 10 && fixPos.y >= 0 && fixPos.y < 6) {
+    // Check if clicked in a piece and removed it
     if (board.painted[fixPos.x][fixPos.y] > 0) {
       pressedPiece = board.painted[fixPos.x][fixPos.y] - 1;
       board.removeColor(pressedPiece + 1);
       usedPieces[pressedPiece] = false;
     }
+  // Clicked in a piece square
   } else {
     for (let i = 0; i < buttonsPos.length; ++i) {
       let currButton = buttonsPos[i];
@@ -217,6 +166,7 @@ function mousePressed(){
 }
 
 function keyPressed(){
+  // Restart the game
   if (key == "Escape") {
     pressedPiece = null;
     usedPieces = {};
@@ -226,6 +176,7 @@ function keyPressed(){
     return;
   }
 
+  // Rotate the piece with Q and E
   if (pressedPiece != null) {
     if (key === 'q' || key === 'Q') {
       let piece = pieces[pressedPiece];
