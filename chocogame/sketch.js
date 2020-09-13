@@ -175,12 +175,15 @@ function keyPressed(){
 
   // Rotate the piece with Q and E
   if (pressedPiece != null) {
+    let piece = pieces[pressedPiece];
     if (key === 'q' || key === 'Q') {
-      let piece = pieces[pressedPiece];
       piece.rotateAntiClockwise();
     } else if (key === 'e' || key === 'E') {
-      let piece = pieces[pressedPiece];
       piece.rotate();
+    } else if (key === 'h' || key === 'H') {
+      piece.horizontalReverse();
+    } else if (key === 'v' || key === 'V') {
+      piece.verticalReverse();
     }
   }
 }
