@@ -48,6 +48,13 @@ function Piece(id=0, tiles = [], c = color("white")){
     this.rotate();
     this.rotate();
   }
+
+  this.resetTo0 = () => {
+    this.possiblePositions[0].forEach((position, index) => {
+      this.tiles[index].x = position.x;
+      this.tiles[index].y = position.y;
+    });
+  }
   
   this.moveTo00 = () => {
     this.tiles.sort((a,b) => {

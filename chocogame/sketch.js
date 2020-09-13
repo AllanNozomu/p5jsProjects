@@ -154,6 +154,7 @@ function mousePressed(){
       if (currButton.x <= pos.x && pos.x <= currButton.x + 5) {
         if (currButton.y <= pos.y && pos.y <= currButton.y + 4 && !usedPieces[i]) {
           pressedPiece = i;
+          pieces[i].resetTo0();
           break;
         }
       }
