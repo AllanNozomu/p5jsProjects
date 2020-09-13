@@ -27,7 +27,6 @@ let board;
 let piecesColors;
 let pieces = [];
 let buttonsPos = [];
-let piecesRotations = {};
 let usedPieces = {};
 let pressedPiece = null;
 
@@ -66,7 +65,6 @@ function setup() {
     pieces.push(new Piece(i + 1, PIECES_MAP[i], piecesColors[i]));
     let pos = new Position(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2);
     buttonsPos.push(pos);
-    piecesRotations[i] = 0;
   }
 }
 
@@ -108,7 +106,7 @@ function draw() {
   // Make the selected piece float
   if (pressedPiece !== null) {
     let dragPos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
-    pieces[pressedPiece].draw(dragPos.x, dragPos.y, piecesRotations[pressedPiece]);
+    pieces[pressedPiece].draw(dragPos.x, dragPos.y);
   }
 
   // Verify if all the pieces was put
@@ -135,10 +133,9 @@ function mousePressed(){
     }
 
     let piece = pieces[pressedPiece];
-    let pieceRotation = piecesRotations[pressedPiece];
 
-    if (board.canInsert(fixPos.x, fixPos.y, piece.possiblePositions[pieceRotation])) {
-      board.insert(fixPos.x, fixPos.y, piece.possiblePositions[pieceRotation], piece.id);
+    if (board.canInsert(fixPos.x, fixPos.y, piece.tiles)) {
+      board.insert(fixPos.x, fixPos.y, piece.tiles, piece.id);
       usedPieces[pressedPiece] = true;
       pressedPiece = null;
     }
@@ -179,14 +176,10 @@ function keyPressed(){
   if (pressedPiece != null) {
     if (key === 'q' || key === 'Q') {
       let piece = pieces[pressedPiece];
-      piecesRotations[pressedPiece]++;
-      if (piecesRotations[pressedPiece] >= piece.possiblePositions.length)
-        piecesRotations[pressedPiece] = 0;
+      piece.rotateAntiClockwise();
     } else if (key === 'e' || key === 'E') {
       let piece = pieces[pressedPiece];
-      piecesRotations[pressedPiece]--;
-      if (piecesRotations[pressedPiece] < 0)
-        piecesRotations[pressedPiece] = piece.possiblePositions.length - 1;
+      piece.rotate();
     }
   }
 }

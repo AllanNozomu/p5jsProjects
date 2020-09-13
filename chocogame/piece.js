@@ -17,6 +17,20 @@ function Piece(id=0, tiles = [], c = color("white")){
       position.x += maxValue;
     });
   }
+
+  this.verticalReverse = () => {
+    if (id === 1) return;
+    let maxValue = 0;
+    
+    this.tiles.map((position) => {
+      maxValue = max(maxValue, position.y);
+      position.y *= -1;
+    });
+    
+    this.tiles.map((position) => {
+      position.y += maxValue;
+    });
+  }
   
   this.rotate = () => {
     if (id === 1) return;
@@ -27,6 +41,12 @@ function Piece(id=0, tiles = [], c = color("white")){
     });
     this.horizontalReverse();
     this.moveTo00
+  }
+
+  this.rotateAntiClockwise = () => {
+    this.rotate();
+    this.rotate();
+    this.rotate();
   }
   
   this.moveTo00 = () => {
@@ -39,21 +59,20 @@ function Piece(id=0, tiles = [], c = color("white")){
       position.y -= yMin;
     });
   }
-  
-  
-  this.draw = (x = 0, y = 0) => {
-    this.tiles.forEach((position) => {
-      fill(this.color);
-      rect((position.x + x)*TILE_WIDTH, (position.y + y)*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-    });
-  }
-  
+
   // Draw based on the possible position index
-  this.draw = (x, y, index) => {
-    this.possiblePositions[index].forEach((position) => {
-      fill(this.color);
-      rect((position.x + x)*TILE_WIDTH, (position.y + y)*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-    });
+  this.draw = (x, y, index = -1) => {
+    if (index < 0) {
+      this.tiles.forEach((position) => {
+        fill(this.color);
+        rect((position.x + x)*TILE_WIDTH, (position.y + y)*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+      });
+    } else {
+      this.possiblePositions[index].forEach((position) => {
+        fill(this.color);
+        rect((position.x + x)*TILE_WIDTH, (position.y + y)*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+      });
+    }
   }
   
 
@@ -84,4 +103,5 @@ function Piece(id=0, tiles = [], c = color("white")){
     }).length == 0)
       this.possiblePositions.push(possiblePosition);
   }
+  this.horizontalReverse();
 }
