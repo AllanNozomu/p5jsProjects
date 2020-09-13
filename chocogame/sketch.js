@@ -155,9 +155,8 @@ function mousePressed(){
     for (let i = 0; i < buttonsPos.length; ++i) {
       let currButton = buttonsPos[i];
       if (currButton.x <= pos.x && pos.x <= currButton.x + 5) {
-        if (currButton.y <= pos.y && pos.y <= currButton.y + 4){
+        if (currButton.y <= pos.y && pos.y <= currButton.y + 4 && !usedPieces[i]) {
           pressedPiece = i;
-          piecesRotations[pressedPiece] = 0;
           break;
         }
       }
