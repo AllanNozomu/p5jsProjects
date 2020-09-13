@@ -19,26 +19,29 @@ let board;
 let pieces = [];
 let nextPosition;
 let resolutions = [];
-let resolutionsCount = 0;
+let slider1;
+let slider2;
 
 function setup() {
+  createCanvas(500, 300);
+  frameRate(30);
+
+  // Need to put here to make color work
   piecesColors = [
     color('magenta'),
     color('blue'),
-    color('yellow'),
+    color('gold'),
     color('red'),
     color('purple'),
     color('black'),
-    color('white'),
+    color('darkblue'),
     color('green'),
     color('cyan'),
     color('gray'),
     color('pink'),
     color('brown')
   ]
-  createCanvas(1400, 1400);
-  frameRate(1);
-
+  
   tiles = [];
   for (let i = 0 ; i < 10; ++i){
     for (let j = 0 ; j < 6; ++j){
@@ -50,116 +53,40 @@ function setup() {
   for (let i = 0 ; i < piecesPositions.length; ++i) {
     pieces.push(new Piece(i + 1, piecesPositions[i], piecesColors[i]));
   }
+
   for (let i = 0 ; i < piecesPositions.length; ++i) {
     for (let j = 0 ; j < pieces[i].possiblePositions.length; ++j) {
-      board.solve(0, 0, i, j);
+      // board.solve(0, 0, i, j);
     }
   }
-  console.log(resolutionsCount);
+
+  resolutions = JSON.parse(all_resolutions);
+
+  slider1 = createSlider(0, 93, 0, 1);
+  slider1.position(50, 200);
+  slider1.style('width', '400px');
+
+  slider2 = createSlider(0, 100, 0, 1);
+  slider2.position(50, 250);
+  slider2.style('width', '400px');
 }
 
 function draw() {
-  background(110);
-  // for (let i = 0 ; i < piecesPositions.length; ++i) {
-  //   for (let j = 0; j < pieces[i].possiblePositions.length; ++j) {
-  //     pieces[i].draw(j * 6 + 11, 2 + 5 * i, j);
-  //   }
-  // }
-  // for (let i = 0; i < resolutions.length; ++i) {
-  //   board.draw(0, i * 4, resolutions[i]);
-  // }
-  board.draw(0, 0, resolutions[0]);
-}
+  background(220);
 
-function Board(tiles = [], rows = 0, columns = 0){
-  this.tiles = tiles.sort();
-  this.painted = {};
-  this.usedPieces = tiles.map(() => false);
-  this.usedPiecesCount = 0;
-  this.done = false;
+  let resVal = slider1.value() * 100 + slider2.value();
+  resVal = Math.min(resVal, resolutions.length - 1);
 
-  tiles.forEach(tile => {
-    if (!this.painted[tile.x]){
-      this.painted[tile.x] = {};
-    }
-    this.painted[tile.x][tile.y] = 0;
-  });
-  
-  this.canInsert = (x, y, tiles) => {
-    for (let i = 0;  i < tiles.length; ++i){
-        if (this.painted[tiles[i].x + x] === undefined ||  this.painted[tiles[i].x + x][tiles[i].y + y]  === undefined || this.painted[tiles[i].x + x][tiles[i].y + y] !== 0) {
-          return false;
-        }
-      }
-    return true;
-  }
-  
-  this.insert = (x, y, tiles, id) => {
-    tiles.forEach(position => {
-      this.painted[position.x + x][position.y + y] = id;
-    });
-  }
-  
-  this.remove = (x, y, tiles) => {
-    tiles.forEach(position => {
-      this.painted[position.x + x][position.y + y] = 0;
-    });
-  }
-  
-  this.nextUnused = () => {
-    for (let i = 0; i < tiles.length; ++i) {
-      let pos = tiles[i];
-      if (this.painted[pos.x][pos.y] === 0) {
-        return pos;
-      }
-    }
-    return undefined;
-  }
-  
-  this.found = false;
-  this.solve = (x, y, pieceIndex, positionIndex) => {
-    let currTiles = pieces[pieceIndex].possiblePositions[positionIndex];
-    
-    if (!this.canInsert(x, y, currTiles)) {
-      return;
-    } else {
-      this.insert(x, y, currTiles, pieceIndex + 1);
-      this.usedPieces[pieceIndex] = true;
-      this.usedPiecesCount++;
-      
-      if (this.usedPiecesCount === 12){
-        // resolutions.push(JSON.parse(JSON.stringify(this.painted)));
-        resolutionsCount++;
-      } else {
-        let nextPos = this.nextUnused();
-        for (let i = 0; i < pieces.length; ++i) {
-          if (!this.usedPieces[i]) {
-            for (let j = 0; j < pieces[i].possiblePositions.length; ++j) {
-              this.solve(nextPos.x, nextPos.y, i, j);
-            }
-          }
-        }
-      }
+  textSize(16);
+  fill(0);
+  text(`${resVal}`,  50 / 2, 180);
 
-      this.remove(x, y, currTiles);
-      this.usedPieces[pieceIndex] = false;
-      this.usedPiecesCount--;
-    }
-  }
   
-  this.draw = (x = 0, y = 0, painted = this.painted) => {
-    this.tiles.forEach(tile => {
-      let color = painted[tile.x][tile.y];
-      if (nextPosition != undefined && tile.x === nextPosition.x && tile.y === nextPosition.y) {
-        fill(0,255,0);
-      } else if (color === 0) {
-        fill(255,0,0);
-      }else{
-        fill(piecesColors[color-1]);
-      }
-      rect((x + tile.x)*TILE_WIDTH, (y + tile.y)*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-    })
+  for (let i = 0;  i < resolutions[resVal].length; ++i) {
+    let info = resolutions[resVal][i];
+    board.insert(info[0], info[1], pieces[i].possiblePositions[info[2]], i + 1);
   }
+  board.draw(7, 1);
 }
 
 function Position(x = 0, y = 0){
