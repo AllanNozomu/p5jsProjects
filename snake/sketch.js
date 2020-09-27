@@ -28,9 +28,11 @@ function draw() {
 }
 
 function Game() {
+    this.paused = true;
     this.ended = false;
     this.snake = new Snake(9,9);
     this.food = new Food();
+    this.score = 0;
 
     const KEYS = {
         "w" : DIRECTIONS.UP,
@@ -40,41 +42,74 @@ function Game() {
     }
 
     this.start = () => {
-        this.ended = false;
+        this.paused = true;
+        this.finished = false;
         this.snake = new Snake(9,9);
         this.food = new Food();
         this.food.getNewPosition(this.snake.tiles);
+        this.score = 0;
     }
 
     this.update = () => {
-        if (this.ended) return;
+        if (this.finished || this.paused) return;
         
         this.snake.update();
         if (this.snake.head().x === this.food.position.x && this.snake.head().y === this.food.position.y) {
             this.food.getNewPosition(this.snake.tiles);
             this.snake.grow();
+            this.score++;
         }
         if (this.snake.checkCollision()) {
-            this.ended = true;
+            this.finished = true;
         }
         if (this.snake.head().x < 0 || this.snake.head().y < 0 || this.snake.head().x >= 20 || this.snake.head().y >= 20)
-            this.ended = true;
+            this.finished = true;
     }
 
     this.draw = () => {
         this.snake.draw();
         this.food.draw();
+
+        let s;
+        fill(0);
+        textSize(64);
+        if (this.paused) {
+            s = "PAUSED";
+            text(s, 240 - textWidth(s) / 2, 200);
+
+            textSize(32);
+            s = "Press P to continue";
+            text(s, 240 - textWidth(s) / 2, 300);
+            s = "w, a, s, d to move";
+            text(s, 240 - textWidth(s) / 2, 350);
+        } else if (this.finished) {
+            s = "GAME OVER";
+            text(s, 240 - textWidth(s) / 2, 200);
+            s = `SCORE ${this.score}`;
+            text(s, 240 - textWidth(s) / 2, 300);
+            textSize(32);
+            s = "Press ESC to play again";
+            text(s, 240 - textWidth(s) / 2, 370);
+        }
     }
 
     this.handleClick = (pressed_key) => {
+        console.log(pressed_key);
+        if (pressed_key === "p") {
+            this.paused = !this.paused;
+        } else if (pressed_key === "escape") {
+            this.start();
+        }
+
         if (!sameDirection(this.snake.direction, KEYS[pressed_key]))
-            this.snake.direction = KEYS[pressed_key];
+            this.snake.nextDirection = KEYS[pressed_key];
     }
 }
 
 function Snake(x, y) {
     this.tiles = [new Position(x, y)];
     this.direction = DIRECTIONS.UP;
+    this.nextDirection = null;
     this.isGrowing = false;
     
     this.head = () => {
@@ -85,15 +120,11 @@ function Snake(x, y) {
         this.isGrowing = true;
     }
 
-    this.draw = () => {
-        fill("green");
-        this.tiles.forEach(t => {
-            rect(t.x * TILE_WIDTH, t.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-        });
-    }
-
     this.update = () => {
         let position = new Position(this.head().x, this.head().y);
+        if (this.nextDirection != null) {
+            this.direction = this.nextDirection;
+        }
         
         if (!this.isGrowing) {
             this.tiles.pop();
@@ -110,6 +141,13 @@ function Snake(x, y) {
             if (this.head().x === this.tiles[i].x && this.head().y === this.tiles[i].y) return true;
         }
         return false;
+    }
+
+    this.draw = () => {
+        fill("green");
+        this.tiles.forEach(t => {
+            rect(t.x * TILE_WIDTH, t.y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+        });
     }
 }
 
