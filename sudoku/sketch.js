@@ -188,6 +188,17 @@ function keyPressed(){
     } 
     selected = null;
     value = 0;
+    return;
+  }
+  if (key == "Escape")
+  {
+    board.forEach(r =>
+    {
+      for (let i = 0; i < r.length; ++i){
+        r[i] = 0;
+      }
+    });
+    boardBefore = JSON.parse(JSON.stringify(board));
   }
 
   if (selected != null) {
@@ -197,5 +208,6 @@ function keyPressed(){
 
     value = keyValue;
     board[selected.x][selected.y] = value;
+    boardBefore[selected.x][selected.y] = value;
   }
 }
