@@ -1,16 +1,16 @@
 const TILE_WIDTH = 24;
 const DIRECTIONS = {
-    "UP" : [0, -1],
-    "DOWN" : [0, 1],
-    "LEFT" : [-1, 0],
-    "RIGHT" : [1, 0]
+    "UP": [0, -1],
+    "DOWN": [0, 1],
+    "LEFT": [-1, 0],
+    "RIGHT": [1, 0]
 };
 
 function sameDirection(d1, d2) {
     return (((d1 === DIRECTIONS.UP || d1 === DIRECTIONS.DOWN) && (d2 === DIRECTIONS.UP || d2 === DIRECTIONS.DOWN))
-    || ((d1 === DIRECTIONS.LEFT || d1 === DIRECTIONS.RIGHT) && (d2 === DIRECTIONS.LEFT || d2 === DIRECTIONS.RIGHT))) 
+        || ((d1 === DIRECTIONS.LEFT || d1 === DIRECTIONS.RIGHT) && (d2 === DIRECTIONS.LEFT || d2 === DIRECTIONS.RIGHT)))
 }
- 
+
 let game;
 
 function setup() {
@@ -30,21 +30,21 @@ function draw() {
 function Game() {
     this.paused = true;
     this.ended = false;
-    this.snake = new Snake(9,9);
+    this.snake = new Snake(9, 9);
     this.food = new Food();
     this.score = 0;
 
     const KEYS = {
-        "w" : DIRECTIONS.UP,
-        "a" : DIRECTIONS.LEFT,
-        "s" : DIRECTIONS.DOWN,
-        "d" : DIRECTIONS.RIGHT
+        "w": DIRECTIONS.UP,
+        "a": DIRECTIONS.LEFT,
+        "s": DIRECTIONS.DOWN,
+        "d": DIRECTIONS.RIGHT
     }
 
     this.start = () => {
         this.paused = true;
         this.finished = false;
-        this.snake = new Snake(9,9);
+        this.snake = new Snake(9, 9);
         this.food = new Food();
         this.food.getNewPosition(this.snake.tiles);
         this.score = 0;
@@ -52,7 +52,7 @@ function Game() {
 
     this.update = () => {
         if (this.finished || this.paused) return;
-        
+
         this.snake.update();
         if (this.snake.head().x === this.food.position.x && this.snake.head().y === this.food.position.y) {
             this.food.getNewPosition(this.snake.tiles);
@@ -111,7 +111,7 @@ function Snake(x, y) {
     this.direction = DIRECTIONS.UP;
     this.nextDirection = null;
     this.isGrowing = false;
-    
+
     this.head = () => {
         return this.tiles[0];
     }
@@ -125,7 +125,7 @@ function Snake(x, y) {
         if (this.nextDirection != null) {
             this.direction = this.nextDirection;
         }
-        
+
         if (!this.isGrowing) {
             this.tiles.pop();
         }
@@ -152,20 +152,20 @@ function Snake(x, y) {
 }
 
 function Food() {
-    this.position = new Position(0,0);
+    this.position = new Position(0, 0);
 
-    this.getNewPosition= (usedTiles) => {
+    this.getNewPosition = (usedTiles) => {
         let success = false;
         let x, y;
 
-        while(!success) {
+        while (!success) {
             success = true;
             x = Math.floor(random(0, 20));
             y = Math.floor(random(0, 20));
-            
-            for (let i = 0; i < usedTiles.length; ++i){
+
+            for (let i = 0; i < usedTiles.length; ++i) {
                 let curr = usedTiles[i];
-                if (curr.x === x && curr.y === y){
+                if (curr.x === x && curr.y === y) {
                     success = false;
                     break;
                 }

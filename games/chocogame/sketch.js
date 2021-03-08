@@ -1,4 +1,4 @@
-function Position(x = 0, y = 0){
+function Position(x = 0, y = 0) {
   this.x = x;
   this.y = y;
 }
@@ -7,20 +7,20 @@ const WIDTH = 500;
 const HEIGHT = 500;
 const TILE_WIDTH = 20;
 const PIECES_MAP = [
-  [new Position(0,0),new Position(1,0),new Position(2,0),new Position(1,-1),new Position(1,1)],
-  [new Position(0,0),new Position(1,0),new Position(1,1),new Position(2,1),new Position(2,2)],
-  [new Position(0,0),new Position(1,0),new Position(2,0),new Position(3,0),new Position(4,0)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(0,3),new Position(1,3)],
-  
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,2),new Position(2,2)],
-  [new Position(0,0),new Position(0,1),new Position(1,1),new Position(2,1),new Position(2,2)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(0,0)],
-  [new Position(0,0),new Position(0,1),new Position(1,1),new Position(1,2),new Position(2,1)],
-  
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,1),new Position(2,1)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(0,3),new Position(1,1)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,0),new Position(1,1)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,2),new Position(1,3)]
+  [new Position(0, 0), new Position(1, 0), new Position(2, 0), new Position(1, -1), new Position(1, 1)],
+  [new Position(0, 0), new Position(1, 0), new Position(1, 1), new Position(2, 1), new Position(2, 2)],
+  [new Position(0, 0), new Position(1, 0), new Position(2, 0), new Position(3, 0), new Position(4, 0)],
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(0, 3), new Position(1, 3)],
+
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(1, 2), new Position(2, 2)],
+  [new Position(0, 0), new Position(0, 1), new Position(1, 1), new Position(2, 1), new Position(2, 2)],
+  [new Position(0, 2), new Position(1, 0), new Position(1, 1), new Position(1, 2), new Position(0, 0)],
+  [new Position(0, 0), new Position(0, 1), new Position(1, 1), new Position(1, 2), new Position(2, 1)],
+
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(1, 1), new Position(2, 1)],
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(0, 3), new Position(1, 1)],
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(1, 0), new Position(1, 1)],
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(1, 2), new Position(1, 3)]
 ];
 
 let board;
@@ -50,18 +50,18 @@ function setup() {
     color('pink'),
     color('brown')
   ]
-  
+
 
   tiles = [];
-  for (let i = 0 ; i < 10; ++i){
-    for (let j = 0 ; j < 6; ++j){
-      tiles.push(new Position(i,j));
+  for (let i = 0; i < 10; ++i) {
+    for (let j = 0; j < 6; ++j) {
+      tiles.push(new Position(i, j));
     }
   }
   board = new Board(tiles);
-  
+
   // Create each piece and set its position on the game
-  for (let i = 0 ; i < PIECES_MAP.length; ++i) {
+  for (let i = 0; i < PIECES_MAP.length; ++i) {
     pieces.push(new Piece(i + 1, PIECES_MAP[i], piecesColors[i]));
     let pos = new Position(6 * (i % 4) + 1, 7 + ((int)(i / 4) * 5) + 2);
     buttonsPos.push(pos);
@@ -75,9 +75,9 @@ function draw() {
 
   background(220);
   board.draw(7, 1);
-  
+
   // Draw each piece square
-  for (let i = 0 ; i < PIECES_MAP.length; ++i) {
+  for (let i = 0; i < PIECES_MAP.length; ++i) {
     let pos = buttonsPos[i];
 
     fill(110);
@@ -85,21 +85,21 @@ function draw() {
   }
 
   let placed = 0;
-  for (let i = 0 ; i < PIECES_MAP.length; ++i) {
+  for (let i = 0; i < PIECES_MAP.length; ++i) {
     if (usedPieces[i]) {
       placed++;
       continue;
     }
-    
+
     if (pressedPiece != null && i === pressedPiece) {
       continue;
     }
-    
+
     // Draw each piece (the first piece is an exception)
     let pos = buttonsPos[i];
     if (i == 0)
       pieces[i].draw(pos.x, pos.y + 1, 0)
-    else 
+    else
       pieces[i].draw(pos.x, pos.y, 0);
   }
 
@@ -117,7 +117,7 @@ function draw() {
   }
 }
 
-function mousePressed(){
+function mousePressed() {
   if (mouseButton !== LEFT) return;
   // Real position (based on Tile_WIDTH)
   let pos = new Position(Math.floor(mouseX / TILE_WIDTH), Math.floor(mouseY / TILE_WIDTH));
@@ -127,7 +127,7 @@ function mousePressed(){
   // Current holding a piece
   if (pressedPiece != null) {
     // Check click inside board
-    if (fixPos.x < 0 || fixPos. x >= 10 || fixPos.y < 0 || fixPos.y >= 6) {
+    if (fixPos.x < 0 || fixPos.x >= 10 || fixPos.y < 0 || fixPos.y >= 6) {
       pressedPiece = null;
       return;
     }
@@ -139,15 +139,15 @@ function mousePressed(){
       usedPieces[pressedPiece] = true;
       pressedPiece = null;
     }
-  // Clicked on board
-  } else if (fixPos.x >= 0 && fixPos. x < 10 && fixPos.y >= 0 && fixPos.y < 6) {
+    // Clicked on board
+  } else if (fixPos.x >= 0 && fixPos.x < 10 && fixPos.y >= 0 && fixPos.y < 6) {
     // Check if clicked in a piece and removed it
     if (board.painted[fixPos.x][fixPos.y] > 0) {
       pressedPiece = board.painted[fixPos.x][fixPos.y] - 1;
       board.removeColor(pressedPiece + 1);
       usedPieces[pressedPiece] = false;
     }
-  // Clicked in a piece square
+    // Clicked in a piece square
   } else {
     for (let i = 0; i < buttonsPos.length; ++i) {
       let currButton = buttonsPos[i];
@@ -162,12 +162,12 @@ function mousePressed(){
   }
 }
 
-function keyPressed(){
+function keyPressed() {
   // Restart the game
   if (key == "Escape") {
     pressedPiece = null;
     usedPieces = {};
-    for (let i = 0 ; i < PIECES_MAP.length; ++i) {
+    for (let i = 0; i < PIECES_MAP.length; ++i) {
       board.removeColor(i + 1);
     }
     return;

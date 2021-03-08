@@ -18,25 +18,25 @@ function draw() {
   background(0);
   translate(256, 256);
 
-  let angle = (2 * PI)/360 * time;
+  let angle = (2 * PI) / 360 * time;
 
   stroke(255);
   noFill();
 
   let prev = new ComplexPoint();
-  let prevPos = {x : 0, y : 0}
+  let prevPos = { x: 0, y: 0 }
   let numberCircles = slider.value();
 
   textSize(16);
   fill(255);
-  text(`${numberCircles}`,  0, 0);
+  text(`${numberCircles}`, 0, 0);
 
   noFill();
 
-  for (let i = 1; i <= numberCircles; i+= 2){
-    prev.modulus = (4 * 100/(i *PI));
+  for (let i = 1; i <= numberCircles; i += 2) {
+    prev.modulus = (4 * 100 / (i * PI));
     prev.draw(prevPos.x, prevPos.y, angle * i);
-    
+
     let newPos = prev.getPosition(angle * i);
     newPos.x += prevPos.x;
     newPos.y += prevPos.y;
@@ -48,7 +48,7 @@ function draw() {
   line(prevPos.x, prevPos.y, 384, prevPos.y)
 
   beginShape();
-  points.forEach((y,x) => {
+  points.forEach((y, x) => {
     vertex(x + 384, y);
   });
   endShape();
@@ -75,7 +75,7 @@ function ComplexPoint(real = 0, imaginary = 0) {
 
   this.draw = (x = 0, y = 0, angle = 0) => {
     ellipse(x, y, 2 * this.modulus);
-  
+
     let pos = this.getPosition(angle);
     ellipse(x + pos.x, y + pos.y, MINI_RADIUS);
   }

@@ -2,18 +2,18 @@ let piecesColors;
 
 const TILE_WIDTH = 20;
 const piecesPositions = [
-  [new Position(0,0),new Position(1,0),new Position(2,0),new Position(1,-1),new Position(1,1)],
-  [new Position(0,0),new Position(0,1),new Position(1,1),new Position(1,2),new Position(2,2)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(0,3),new Position(0,4)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(0,3),new Position(1,3)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,2),new Position(2,2)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(2,0)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(0,0)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(2,1)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(2,2)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(1,3)],
-  [new Position(0,0),new Position(0,1),new Position(0,2),new Position(1,0),new Position(1,1)],
-  [new Position(0,2),new Position(1,0),new Position(1,1),new Position(1,2),new Position(0,3)]
+  [new Position(0, 0), new Position(1, 0), new Position(2, 0), new Position(1, -1), new Position(1, 1)],
+  [new Position(0, 0), new Position(0, 1), new Position(1, 1), new Position(1, 2), new Position(2, 2)],
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(0, 3), new Position(0, 4)],
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(0, 3), new Position(1, 3)],
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(1, 2), new Position(2, 2)],
+  [new Position(0, 2), new Position(1, 0), new Position(1, 1), new Position(1, 2), new Position(2, 0)],
+  [new Position(0, 2), new Position(1, 0), new Position(1, 1), new Position(1, 2), new Position(0, 0)],
+  [new Position(0, 2), new Position(1, 0), new Position(1, 1), new Position(1, 2), new Position(2, 1)],
+  [new Position(0, 2), new Position(1, 0), new Position(1, 1), new Position(1, 2), new Position(2, 2)],
+  [new Position(0, 2), new Position(1, 0), new Position(1, 1), new Position(1, 2), new Position(1, 3)],
+  [new Position(0, 0), new Position(0, 1), new Position(0, 2), new Position(1, 0), new Position(1, 1)],
+  [new Position(0, 2), new Position(1, 0), new Position(1, 1), new Position(1, 2), new Position(0, 3)]
 ];
 let board;
 let pieces = [];
@@ -41,21 +41,21 @@ function setup() {
     color('pink'),
     color('brown')
   ]
-  
+
   tiles = [];
-  for (let i = 0 ; i < 10; ++i){
-    for (let j = 0 ; j < 6; ++j){
-      tiles.push(new Position(i,j));
+  for (let i = 0; i < 10; ++i) {
+    for (let j = 0; j < 6; ++j) {
+      tiles.push(new Position(i, j));
     }
   }
   board = new Board(tiles);
-  
-  for (let i = 0 ; i < piecesPositions.length; ++i) {
+
+  for (let i = 0; i < piecesPositions.length; ++i) {
     pieces.push(new Piece(i + 1, piecesPositions[i], piecesColors[i]));
   }
 
-  for (let i = 0 ; i < piecesPositions.length; ++i) {
-    for (let j = 0 ; j < pieces[i].possiblePositions.length; ++j) {
+  for (let i = 0; i < piecesPositions.length; ++i) {
+    for (let j = 0; j < pieces[i].possiblePositions.length; ++j) {
       // board.solve(0, 0, i, j);
     }
   }
@@ -79,17 +79,17 @@ function draw() {
 
   textSize(16);
   fill(0);
-  text(`${resVal}`,  50 / 2, 180);
+  text(`${resVal}`, 50 / 2, 180);
 
-  
-  for (let i = 0;  i < resolutions[resVal].length; ++i) {
+
+  for (let i = 0; i < resolutions[resVal].length; ++i) {
     let info = resolutions[resVal][i];
     board.insert(info[0], info[1], pieces[i].possiblePositions[info[2]], i + 1);
   }
   board.draw(7, 1);
 }
 
-function Position(x = 0, y = 0){
+function Position(x = 0, y = 0) {
   this.x = x;
   this.y = y;
 }
