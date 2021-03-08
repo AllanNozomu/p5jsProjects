@@ -1,5 +1,12 @@
+function Position(x = 0, y = 0){
+  this.x = x;
+  this.y = y;
+}
+
 let board;
 let boardBefore;
+let selected = null;
+let value = 0;
 
 function setup() {
   createCanvas(460, 460);
@@ -7,6 +14,7 @@ function setup() {
   board = [[5, 3, 0, 0, 7, 0, 0, 0, 0], [6, 0, 0, 1, 9, 5, 0, 0, 0], [0, 9, 8, 0, 0, 0, 0, 6, 0], [8, 0, 0, 0, 6, 0, 0, 0, 3], [4, 0, 0, 8, 0, 3, 0, 0, 1], [7, 0, 0, 0, 2, 0, 0, 0, 6], [0, 6, 0, 0, 0, 0, 2, 8, 0], [0, 0, 0, 4, 1, 9, 0, 0, 5], [0, 0, 0, 0, 8, 0, 0, 7, 9]];
   boardBefore = JSON.parse(JSON.stringify(board));
   solveSudoku(board);
+  console.log(board)
 }
 
 function draw() {
@@ -29,13 +37,26 @@ function draw() {
     line(lineSize, 50, lineSize, 410)
 
     for (let j = 0; j < 9; ++j) {
+      if (selected != null && selected.x == i && selected.y == j){
+        strokeWeight(0);
+        fill("YELLOW")
+        rect(i * 40 + 55, j * 40 + 55, 30, 30)
+        fill("BLACK")
+      }
+
+      if (board[i][j] == 0) continue;
+
       if (boardBefore[i][j] != 0) {
         strokeWeight(2);
         stroke(1);
-      }
-      else {
+      } else {
         strokeWeight(0);
         stroke(0);
+      }
+      if (selected != undefined && selected.x == i && selected.y == j){
+        fill("RED")
+      } else {
+        fill(1)
       }
       text(board[i][j], i * 40 + 50 + (textWidth(board[i][j]) / 2), j * 40 + 50 + 34)
     }
@@ -43,7 +64,8 @@ function draw() {
 }
 
 function solveSudoku(board) {
-  solveSudokuAux(board, 0, 0);
+  if (!checkBoard(board)) return false;
+  return solveSudokuAux(board, 0, 0);
 }
 
 function solveSudokuAux(board, r, c) {
@@ -52,17 +74,51 @@ function solveSudokuAux(board, r, c) {
   }
 
   if (board[r][c] == 0) {
-    for (let i = 1; i <= 9; ++i) {
-      board[r][c] = i;
-      if (checkRow(board, r) && checkCol(board, c) && checkGrid(board, r, c)) {
-        if (solveSudokuAux(board, (c == 8) ? r + 1 : r, (c + 1) % 9)) return true;
-      }
+    let available = availableNumbers(board, r, c);
+    for (let i = 0; i < available.length; ++i) {
+      board[r][c] = available[i];
+      if (solveSudokuAux(board, (c == 8) ? r + 1 : r, (c + 1) % 9)) return true;
     }
     board[r][c] = 0;
     return false;
   }
 
   return solveSudokuAux(board, (c == 8) ? r + 1 : r, (c + 1) % 9);
+}
+
+function availableNumbers(board, row, col) {
+  let visited = [false, false, false, false, false, false, false, false, false, false]
+  board[row].forEach(c => {
+    visited[c] = true;
+  });
+  board.forEach(r => {
+    visited[r[col]] = true;
+  })
+  row = (int)(row / 3) * 3;
+  col = (int)(col / 3) * 3;
+
+  for (let r = row; r < row + 3; ++r) {
+    for (let c = col; c < col + 3; ++c) {
+      visited[board[r][c]] = true;
+    }
+  }
+  
+  res = []
+  for (let i = 1; i <= 9; ++i)
+    if (!visited[i]) res.push(i)
+  return res;
+}
+
+function checkBoard(board) {
+  for (let i = 0; i < 9; ++i) {
+    if (!checkRow(board, i)) return false;
+    if (!checkCol(board, i)) return false;
+    for (let j = 0; j < 9; ++j)
+    {
+      if (!checkGrid(board, i, j)) return false;
+    }
+  }
+  return true;
 }
 
 function checkRow(board, row) {
@@ -112,4 +168,34 @@ function checkGrid(board, row, col) {
     }
   }
   return true;
+}
+
+function mousePressed(){
+  if (mouseButton !== LEFT) return;
+  if (mouseX < 50 || mouseY < 50 || mouseX > 450 || mouseY > 450) return;
+
+  selected = new Position(Math.floor((mouseX - 50) / 40), Math.floor((mouseY - 50)/ 40));
+}
+
+function keyPressed(){
+  if (key == "Enter") {
+    if (selected == null) return;
+    boardBefore[selected.x][selected.y] = value;
+    board = JSON.parse(JSON.stringify(boardBefore));
+    
+    if (!solveSudoku(board)) {
+      alert("Impossible Sudoku!")
+    } 
+    selected = null;
+    value = 0;
+  }
+
+  if (selected != null) {
+    
+    let keyValue = key.charCodeAt(0) - '0'.charCodeAt(0);
+    if (keyValue < 0 || keyValue > 9) return;
+
+    value = keyValue;
+    board[selected.x][selected.y] = value;
+  }
 }
