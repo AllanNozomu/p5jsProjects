@@ -1,4 +1,4 @@
-function Position(x = 0, y = 0){
+function Position(x = 0, y = 0) {
   this.x = x;
   this.y = y;
 }
@@ -7,6 +7,7 @@ let board;
 let boardBefore;
 let selected = null;
 let value = 0;
+let toggleResolution = false;
 
 function setup() {
   createCanvas(460, 460);
@@ -37,13 +38,14 @@ function draw() {
     line(lineSize, 50, lineSize, 410)
 
     for (let j = 0; j < 9; ++j) {
-      if (selected != null && selected.x == i && selected.y == j){
+      if (selected != null && selected.x == i && selected.y == j) {
         strokeWeight(0);
         fill("YELLOW")
         rect(i * 40 + 55, j * 40 + 55, 30, 30)
         fill("BLACK")
       }
 
+      if (toggleResolution && boardBefore[i][j] == 0) continue
       if (board[i][j] == 0) continue;
 
       if (boardBefore[i][j] != 0) {
@@ -53,7 +55,7 @@ function draw() {
         strokeWeight(0);
         stroke(0);
       }
-      if (selected != undefined && selected.x == i && selected.y == j){
+      if (selected != undefined && selected.x == i && selected.y == j) {
         fill("RED")
       } else {
         fill(1)
@@ -102,7 +104,7 @@ function availableNumbers(board, row, col) {
       visited[board[r][c]] = true;
     }
   }
-  
+
   res = []
   for (let i = 1; i <= 9; ++i)
     if (!visited[i]) res.push(i)
@@ -113,8 +115,7 @@ function checkBoard(board) {
   for (let i = 0; i < 9; ++i) {
     if (!checkRow(board, i)) return false;
     if (!checkCol(board, i)) return false;
-    for (let j = 0; j < 9; ++j)
-    {
+    for (let j = 0; j < 9; ++j) {
       if (!checkGrid(board, i, j)) return false;
     }
   }
@@ -170,39 +171,43 @@ function checkGrid(board, row, col) {
   return true;
 }
 
-function mousePressed(){
+function mousePressed() {
   if (mouseButton !== LEFT) return;
   if (mouseX < 50 || mouseY < 50 || mouseX > 450 || mouseY > 450) return;
 
-  selected = new Position(Math.floor((mouseX - 50) / 40), Math.floor((mouseY - 50)/ 40));
+  selected = new Position(Math.floor((mouseX - 50) / 40), Math.floor((mouseY - 50) / 40));
 }
 
-function keyPressed(){
+function keyPressed() {
   if (key == "Enter") {
     if (selected == null) return;
     boardBefore[selected.x][selected.y] = value;
     board = JSON.parse(JSON.stringify(boardBefore));
-    
+
     if (!solveSudoku(board)) {
       alert("Impossible Sudoku!")
-    } 
+    }
+    toggleResolution = false;
     selected = null;
     value = 0;
     return;
   }
-  if (key == "Escape")
-  {
-    board.forEach(r =>
-    {
-      for (let i = 0; i < r.length; ++i){
+  if (key == "Escape") {
+    board.forEach(r => {
+      for (let i = 0; i < r.length; ++i) {
         r[i] = 0;
       }
     });
     boardBefore = JSON.parse(JSON.stringify(board));
+    return;
+  }
+  if (key == 'V' || key == 'v') {
+    toggleResolution = !toggleResolution;
+    return;
   }
 
   if (selected != null) {
-    
+
     let keyValue = key.charCodeAt(0) - '0'.charCodeAt(0);
     if (keyValue < 0 || keyValue > 9) return;
 
