@@ -7,4 +7,4 @@ There are current some games and some visualizations.
 ## Games
 
 - Chocogame (Meiji Milk Chocolate Puzzle Game) and the resolution
-- SnakeGame (2020-09-27)
+- SnakeGame
